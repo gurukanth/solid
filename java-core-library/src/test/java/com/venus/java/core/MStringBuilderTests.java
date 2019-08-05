@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import java.util.Date;
 
+/**
+ *
+ */
 public class MStringBuilderTests {
   private MStringBuilder stringBuilder;
   private Object[] objectA = new Object[2];
