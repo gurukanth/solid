@@ -28,21 +28,31 @@ public class Trie {
   }
 
   public Trie add(String word) {
-    IntStream.iterate(0, i->i+1).limit(word.length())
-      .mapToObj(i -> Char.of(word.charAt(i), i == word.length()))
-      .forEach(this::add);
-      return this;
-  }
-
-  Trie add(Char iChar) {
-    childNodes.compute(iChar.value(), (k, v) -> v == null ? v = instance(iChar.isLast()) : v.add(iChar));
+    Trie trie = this;
+    for(char c: word.toCharArray()) {
+      trie = add(c, trie);
+    }
+    trie.setWordEnd(true);
     return this;
   }
+
+  Trie add(char c, Trie node) {
+    Trie value = node.childNodes.computeIfAbsent(c, key -> Trie.instance(false));
+    //value.setWordEnd(c.isLast());
+    return value;
+  }
+
+/*  Trie add(Char iChar) {
+    childNodes.compute(iChar.value(), (k, v) -> v == null ? v = instance(iChar.isLast()) : v.add(iChar));
+    return this;
+  }*/
 
 /*  List<String> findAll() {
     childNodes.values().stream()
       .flatMap(node -> )
   }*/
+  void inDepthTraversal(){
+  }
 
   public static class Char extends Tuple<Character, Boolean> {
 
@@ -62,4 +72,17 @@ public class Trie {
       return new Char(c, isLast);
     }
   }
+
+  @Override
+  public String toString() {
+    return childNodes.keySet().toString();
+  }
+
+  public void display(Trie node) {
+    System.out.println(node.toString());
+    for (Trie value : node.childNodes.values()) {
+      display(value);
+    }
+  }
+
 }
