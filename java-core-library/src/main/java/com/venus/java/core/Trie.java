@@ -1,8 +1,11 @@
 package com.venus.java.core;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
 
 public class Trie {
   private Map<Character, Trie> childNodes;
@@ -42,37 +45,6 @@ public class Trie {
     return value;
   }
 
-/*  Trie add(Char iChar) {
-    childNodes.compute(iChar.value(), (k, v) -> v == null ? v = instance(iChar.isLast()) : v.add(iChar));
-    return this;
-  }*/
-
-/*  List<String> findAll() {
-    childNodes.values().stream()
-      .flatMap(node -> )
-  }*/
-  void inDepthTraversal(){
-  }
-
-  public static class Char extends Tuple<Character, Boolean> {
-
-    private Char(Character valA, Boolean valB) {
-      super(valA, valB);
-    }
-
-    Character value(){
-      return getValA();
-    }
-
-    Boolean isLast() {
-      return getValB();
-    }
-
-    public static Char of(Character c, Boolean isLast) {
-      return new Char(c, isLast);
-    }
-  }
-
   @Override
   public String toString() {
     return childNodes.keySet().toString();
@@ -83,6 +55,55 @@ public class Trie {
     for (Trie value : node.childNodes.values()) {
       display(value);
     }
+  }
+
+  public void printWords(char[] word, Trie node, int level) {
+    if(node.isWord) {
+      //word[level] = '\0';
+      System.out.println(printWord(word, level));
+    }
+
+    for (Character c : node.childNodes.keySet()) {
+      word[level] = c;
+      printWords(word, node.childNodes.get(c), level + 1);
+    }
+
+  }
+
+  public List<String> words(char[] word, Trie node, int level, List<String> strings) {
+    if(node.isWord) {
+      //word[level] = '\0';
+      //System.out.println(printWord(word, level));
+      strings.add(printWord(word, level));
+    }
+
+    for (Character c : node.childNodes.keySet()) {
+      word[level] = c;
+      words(word, node.childNodes.get(c), level + 1, strings);
+    }
+    return strings;
+  }
+
+  private String printWord(char[] word, int level) {
+    return String.valueOf(word).substring(0, level);
+  }
+
+  public Boolean searchForWord(String word) {
+    Objects.requireNonNull(word);
+    Trie node = this;
+    for(char c: word.toCharArray()) {
+      if(Objects.isNull(node = node.childNodes.get(c)))
+        return false;
+    }
+    return node.isWord;
+  }
+
+  public Boolean searchForWordWithTimer(String word) {
+    Instant start = Instant.now();
+    Boolean value = searchForWord(word);
+    Instant finish = Instant.now();
+    System.out.println("Time Taken for Search in Nano:" + Duration.between(start, finish).getNano());
+    return value;
   }
 
 }
